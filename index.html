@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Detector</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 80px auto;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 10px;
+            font-size: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            resize: none;
+        }
+        button {
+            width: 100%;
+            margin-top: 15px;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            display: none;
+        }
+        .fake {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .real {
+            background: #d4edda;
+            color: #155724;
+        }
+        .score {
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: normal;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Fake News Detector</h1>
+    <textarea id="newsInput" placeholder="Paste news headline or short article here..."></textarea>
+    <button onclick="analyzeNews()">Analyze News</button>
+
+    <div id="resultBox" class="result">
+        <div id="resultText"></div>
+        <div id="scoreText" class="score"></div>
+    </div>
+</div>
+
+<footer>
+    Beginner Rule-Based Project | No AI Used
+</footer>
+
+<script>
+    function analyzeNews() {
+        const news = document.getElementById("newsInput").value.trim();
+        const resultBox = document.getElementById("resultBox");
+        const resultText = document.getElementById("resultText");
+        const scoreText = document.getElementById("scoreText");
+
+        if (news === "") {
+            alert("Please enter some news text.");
+            return;
+        }
+
+        let score = 0;
+        const lower = news.toLowerCase();
+
+        const fakeWords = [
+            "shocking", "breaking", "unbelievable",
+            "exclusive", "viral", "secret",
+            "exposed", "alert"
+        ];
+
+        fakeWords.forEach(word => {
+            if (lower.includes(word)) {
+                score += 2;
+            }
+        });
+
+        const exclamations = (news.match(/!/g) || []).length;
+        if (exclamations > 2) score += 1;
+
+        let capsCount = 0;
+        news.split(" ").forEach(word => {
+            if (word === word.toUpperCase() && word.length > 2) {
+                capsCount++;
+            }
+        });
+        if (capsCount > 3) score += 2;
+
+        if (news.split(" ").length < 6) score += 1;
+
+        resultBox.style.display = "block";
+
+        if (score >= 4) {
+            resultBox.className = "result fake";
+            resultText.innerText = "Likely FAKE News";
+        } else {
+            resultBox.className = "result real";
+            resultText.innerText = "Likely REAL News";
+        }
+
+        scoreText.innerText = "Confidence Score: " + score;
+    }
+</script>
+
+</body>
+</html>
